@@ -222,3 +222,238 @@ def compose_outfit(payload: ComposeIn):
     composed = _compose_layers(doll_bytes, layer_bytes, positions)
     url = _save_bytes(composed, subdir="outfits")
     return ComposeOut(composed_url=url)
+@app.post("/doll")
+async def create_doll(
+    gender: str = Form(...),
+    size: str = Form(...),
+    skin_tone: str = Form(...),
+    style: str = Form(...)
+):
+    """
+    Generate a customizable doll illustration for the user.
+    """
+    try:
+        # Map input values into a nice natural prompt
+        gender_map = {
+            "female": "a feminine figure",
+            "male": "a masculine figure",
+            "neutral": "a gender-neutral figure"
+        }
+        size_map = {
+            "slim": "slim body type",
+            "average": "average build",
+            "curvy": "curvy body shape",
+            "plus": "plus-size figure"
+        }
+        skin_map = {
+            "light": "light skin tone",
+            "medium": "medium skin tone",
+            "dark": "dark brown skin tone",
+            "deep": "deep ebony skin tone"
+        }
+        style_map = {
+            "watercolor": "soft pastel watercolor fashion sketch",
+            "bold_pop": "bold cartoon pop-art style",
+            "runway_sketch": "high-fashion runway designer sketch"
+        }
+
+        prompt = f"A fashion doll illustration of {gender_map.get(gender, gender)}, {size_map.get(size, size)}, {skin_map.get(skin_tone, skin_tone)}, drawn in {style_map.get(style, style)}."
+
+        # Call OpenAI image generation
+        response = client.images.generate(
+            model="gpt-image-1",
+            prompt=prompt,
+            size="512x512"
+        )
+
+        # Upload to S3 (optional, if you’ve set it up)
+        image_url = response.data[0].url
+        return {"doll_url": image_url, "prompt": prompt}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        @app.post("/doll/restyle")
+async def restyle_doll(
+    gender: str = Form(...),
+    size: str = Form(...),
+    skin_tone: str = Form(...),
+    new_style: str = Form(...)
+):
+    """
+    Redraw an existing doll with a new art style while keeping gender, size, and skin tone the same.
+    """
+    try:
+        gender_map = {
+            "female": "a feminine figure",
+            "male": "a masculine figure",
+            "neutral": "a gender-neutral figure"
+        }
+        size_map = {
+            "slim": "slim body type",
+            "average": "average build",
+            "curvy": "curvy body shape",
+            "plus": "plus-size figure"
+        }
+        skin_map = {
+            "light": "light skin tone",
+            "medium": "medium skin tone",
+            "dark": "dark brown skin tone",
+            "deep": "deep ebony skin tone"
+        }
+        style_map = {
+            "watercolor": "soft pastel watercolor fashion sketch",
+            "bold_pop": "bold cartoon pop-art style",
+            "runway_sketch": "high-fashion runway designer sketch"
+        }
+
+        prompt = f"A fashion doll illustration of {gender_map.get(gender, gender)}, {size_map.get(size, size)}, {skin_map.get(skin_tone, skin_tone)}, drawn in {style_map.get(new_style, new_style)}."
+
+        response = client.images.generate(
+            model="gpt-image-1",
+            prompt=prompt,
+            size="512x512"
+        )
+
+        image_url = response.data[0].url
+        return {"restyled_doll_url": image_url, "prompt": prompt}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        @app.post("/doll/update")
+async def update_doll(
+    gender: str = Form(...),
+    size: str = Form(...),
+    skin_tone: str = Form(...),
+    style: str = Form(...)
+):
+    """
+    Update a doll's details (gender, size, skin tone, and style).
+    Essentially the same as creating a new doll, but meant for editing an existing profile doll.
+    """
+    try:
+        gender_map = {
+            "female": "a feminine figure",
+            "male": "a masculine figure",
+            "neutral": "a gender-neutral figure"
+        }
+        size_map = {
+            "slim": "slim body type",
+            "average": "average build",
+            "curvy": "curvy body shape",
+            "plus": "plus-size figure"
+        }
+        skin_map = {
+            "light": "light skin tone",
+            "medium": "medium skin tone",
+            "dark": "dark brown skin tone",
+            "deep": "deep ebony skin tone"
+        }
+        style_map = {
+            "watercolor": "soft pastel watercolor fashion sketch",
+            "bold_pop": "bold cartoon pop-art style",
+            "runway_sketch": "high-fashion runway designer sketch"
+        }
+
+        prompt = f"A fashion doll illustration of {gender_map.get(gender, gender)}, {size_map.get(size, size)}, {skin_map.get(skin_tone, skin_tone)}, drawn in {style_map.get(style, style)}."
+
+        response = client.images.generate(
+            model="gpt-image-1",
+            prompt=prompt,
+            size="512x512"
+        )
+
+        image_url = response.data[0].url
+        return {"updated_doll_url": image_url, "prompt": prompt}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        @app.post("/items/restyle")
+async def restyle_item(
+    description: str = Form(...),
+    new_style: str = Form(...)
+):
+    """
+    Redraw an existing clothing item in a new art style.
+    """
+    try:
+        style_map = {
+            "watercolor": "soft pastel watercolor fashion sketch",
+            "bold_pop": "bold cartoon pop-art style",
+            "runway_sketch": "high-fashion runway designer sketch"
+        }
+
+        prompt = f"A clothing illustration of {description}, drawn in {style_map.get(new_style, new_style)}."
+
+        response = client.images.generate(
+            model="gpt-image-1",
+            prompt=prompt,
+            size="512x512"
+        )
+
+        image_url = response.data[0].url
+        return {"restyled_item_url": image_url, "prompt": prompt}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        @app.post("/items/update")
+async def update_item(
+    new_description: str = Form(...),
+    style: str = Form(...)
+):
+    """
+    Update a clothing item by re-describing it (e.g. fixing details) 
+    and regenerating the illustration in the chosen style.
+    """
+    try:
+        style_map = {
+            "watercolor": "soft pastel watercolor fashion sketch",
+            "bold_pop": "bold cartoon pop-art style",
+            "runway_sketch": "high-fashion runway designer sketch"
+        }
+
+        prompt = f"A clothing illustration of {new_description}, drawn in {style_map.get(style, style)}."
+
+        response = client.images.generate(
+            model="gpt-image-1",
+            prompt=prompt,
+            size="512x512"
+        )
+
+        image_url = response.data[0].url
+        return {"updated_item_url": image_url, "prompt": prompt}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        from typing import List
+
+@app.post("/items/restyle/bulk")
+async def bulk_restyle_items(
+    items: List[str] = Form(...),  # list of descriptions of all clothing items
+    new_style: str = Form(...)
+):
+    """
+    Redraw multiple clothing items in a new art style.
+    Returns a list of URLs for all restyled items.
+    """
+    try:
+        style_map = {
+            "watercolor": "soft pastel watercolor fashion sketch",
+            "bold_pop": "bold cartoon pop-art style",
+            "runway_sketch": "high-fashion runway designer sketch"
+        }
+
+        restyled_urls = []
+        for description in items:
+            prompt = f"A clothing illustration of {description}, drawn in {style_map.get(new_style, new_style)}."
+
+            response = client.images.generate(
+                model="gpt-image-1",
+                prompt=prompt,
+                size="512x512"
+            )
+            restyled_urls.append(response.data[0].url)
+
+        return {"restyled_items_urls": restyled_urls}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
