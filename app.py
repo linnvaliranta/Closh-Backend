@@ -319,7 +319,7 @@ async def restyle_doll(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-        @app.post("/doll/update")
+@app.post("/doll/update")
 async def update_doll(
     gender: str = Form(...),
     size: str = Form(...),
@@ -367,7 +367,7 @@ async def update_doll(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-        @app.post("/items/restyle")
+@app.post("/items/restyle")
 async def restyle_item(
     description: str = Form(...),
     new_style: str = Form(...)
@@ -395,7 +395,7 @@ async def restyle_item(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-        @app.post("/items/update")
+@app.post("/items/update")
 async def update_item(
     new_description: str = Form(...),
     style: str = Form(...)
