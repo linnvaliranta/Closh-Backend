@@ -272,7 +272,7 @@ async def create_doll(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-        @app.post("/doll/restyle")
+@app.post("/doll/restyle")
 async def restyle_doll(
     gender: str = Form(...),
     size: str = Form(...),
