@@ -227,6 +227,56 @@ def get_style_keywords():
 
 # ---------- item endpoints (text / photo) ----------
 @app.post("/items/text", response_model=TextItemOut)
+@app.post("/doll")
+async def create_doll(
+    gender: str = Form(...),
+    size: str = Form(...),
+    skin_tone: str = Form(...),
+    style: str = Form(...)
+):
+    """
+    Generate a customizable doll illustration for the user.
+    """
+    try:
+        gender_map = {
+            "female": "a feminine figure",
+            "male": "a masculine figure",
+            "neutral": "a gender-neutral figure"
+        }
+        size_map = {
+            "slim": "slim body type",
+            "average": "average build",
+            "curvy": "curvy body shape",
+            "plus": "plus-size figure"
+        }
+        skin_map = {
+            "light": "light skin tone",
+            "medium": "medium skin tone",
+            "dark": "dark brown skin tone",
+            "deep": "deep ebony skin tone"
+        }
+        style_map = {
+            "watercolor": "soft pastel watercolor fashion sketch",
+            "bold_pop": "bold cartoon pop-art style",
+            "runway_sketch": "high-fashion runway designer sketch"
+        }
+
+        prompt = f"A fashion doll illustration of {gender_map.get(gender, gender)}, {size_map.get(size, size)}, {skin_map.get(skin_tone, skin_tone)}, drawn in {style_map.get(style, style)}."
+
+        import openai
+        client = openai.OpenAI(api_key=OPENAI_API_KEY)
+
+        response = client.images.generate(
+            model="gpt-image-1",
+            prompt=prompt,
+            size="512x512"
+        )
+
+        image_url = response.data[0].url
+        return {"doll_url": image_url, "prompt": prompt}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 def generate_item_from_text(payload: TextItemIn):
     """
     Create an illustrated wardrobe item from a text description.
